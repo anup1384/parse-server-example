@@ -1,0 +1,28 @@
+replicaCount: 1
+
+namespace:
+  name: test
+
+image:
+  repository: mongo
+  tag: latest
+  pullPolicy: IfNotPresent
+  port: 27017
+
+volumemount:
+  name: mongo-persistent-storage
+  mountpath: "/data/db"
+
+volumeclaim:
+  claimname: mongodb-pvc
+
+service:
+  type: ClusterIP
+  port: 27017
+
+storage:
+  classname: local
+  size: 2Gi
+  accessmodes: "ReadWriteOnce"
+  hostpath: "/data"
+  name: mongodb-pv 

@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "parse-server.fullname" . }}
+  labels:
+{{ include "parse-server.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "parse-server.name" . }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "parse-server.name" . }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.image.port }}
+              protocol: TCP
+          {{- if .Values.configmap }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "parse-server.fullname" . }}
+          {{- end }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.image.health_url }}
+              port: {{ .Values.image.port }}
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+          readinessProbe:
+            httpGet:
+              path:  {{ .Values.image.health_url }}
+              port: {{ .Values.image.port }}
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
