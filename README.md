@@ -67,14 +67,14 @@ Example request to a server running locally:
 
 ```curl
 curl -X POST \
-  -H "X-Parse-Application-Id: myAppId" \
+  -H "X-Parse-Application-Id: app_id_starter" \
   -H "Content-Type: application/json" \
   -d '{"score":1337,"playerName":"Sean Plott","cheatMode":false}' \
-  http://localhost:1337/parse/classes/GameScore
+  http://localhost/parse/classes/GameScore
   
 curl -X POST \
-  -H "X-Parse-Application-Id: myAppId" \
+  -H "X-Parse-Application-Id: app_id_starter" \
   -H "Content-Type: application/json" \
   -d '{}' \
-  http://localhost:1337/parse/functions/hello
+  http://localhost/parse/functions/hello
 ```
