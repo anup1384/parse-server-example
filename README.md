@@ -1,16 +1,27 @@
 # parse-server-example
 
-[![Join The Conversation](https://img.shields.io/discourse/https/community.parseplatform.org/topics.svg)](https://community.parseplatform.org/c/parse-server)
-[![Backers on Open Collective](https://opencollective.com/parse-server/backers/badge.svg)][open-collective-link]
-[![Sponsors on Open Collective](https://opencollective.com/parse-server/sponsors/badge.svg)][open-collective-link]
-[![License][license-svg]][license-link]
-[![Twitter Follow](https://img.shields.io/twitter/follow/ParsePlatform.svg?label=Follow%20us%20on%20Twitter&style=social)](https://twitter.com/intent/follow?screen_name=ParsePlatform)
+Deploying parse-server on on kubernetes cluster step by step.
 
-Example project using the [parse-server](https://github.com/ParsePlatform/parse-server) module on Express.
+### For Local setup on mac k8s
 
-Read the full Parse Server guide here: https://github.com/ParsePlatform/parse-server/wiki/Parse-Server-Guide
+# Prerequisites
 
-### For Local Development
+* An existing Kubernetes cluster is up and running.
+* Knowledge of Docker &  Kubernetes and its object types like StatefulSets, DaemonSet, PersistentVolumes & init container.
+* Knowledge about Helm chart
+* jenkins- for build and deployment
+* Docker registry hub, you can use any other registry like, ECR, GCR.
+
+
+I’m using local mac k8s to setup & deploy an Elastic Search cluster, but you may use any other provider or infrastructure. To start with, first ensure that the Kubernetes Cluster is up and running.
+
+This repository has a Dockerfile and a helm chart for deploying parse-server on Kubernetes.
+
+# Install and Enable helm in your cluster:
+
+
+### Manual setup and deploy parse-server appliaction.
+* Write 
 
 * Make sure you have at least Node 4.3. `node --version`
 * Clone this repo and change directory to it.
