@@ -13,14 +13,27 @@ Deploying parse-server nodejs app on on kubernetes cluster step by step.
 * Docker registry hub, you can use any other registry like, ECR, GCR.
 
 
-I’m using local mac k8s to setup & deploy an Elastic Search cluster, but you may use any other provider or infrastructure. To start with, first ensure that the Kubernetes Cluster is up and running.
+I’m using local mac k8s to setup & deploy an parse-server, but you may use any other provider or infrastructure. To start with, first ensure that the Kubernetes Cluster is up and running.
 
 This repository has a Dockerfile and a helm chart for deploying parse-server on Kubernetes.
 
 # Install and Enable helm in your cluster:
 
+```
+# Download helm package and unpack it
+$ wget https://get.helm.sh/helm-v3.0.0-rc.2-linux-amd64.tar.gz
+$ tar zxfv helm-v3.0.0-rc.2-linux-amd64.tar.gz
+$ cp linux-amd64/helm /usr/local/bin/helm
+# Create The Tiller Service Account and rbac permission
+$ kubectl -n kube-system create serviceaccount tiller
+$ kubectl create clusterrolebinding tiller \
+  --clusterrole cluster-admin \
+  --serviceaccount=kube-system:tiller
+# Init helm and tiller on your cluster
+$ helm init --service-account tiller --upgrade
+```
 
-### Manual setup and deploy parse-server appliaction.
+### steps setup and deploy parse-server appliaction.
 * Write 
 
 * Make sure you have at least Node 4.3. `node --version`
