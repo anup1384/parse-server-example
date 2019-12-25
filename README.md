@@ -49,7 +49,7 @@ $ docker push anuphnu/parse-server-example
 # Deploy application dependency mongo db using helm chart
 $ helm upgrade --install mongo ./infra/helm/mongo-db --namespace parseapp
 # Deploy parse-server app
-$ helm upgrade --install parse-server ./infra/helm/parse-server/ --set image.tag=latest,replicaCount=1,image.repository=anuphnu/parse-server-example  --namespace parseap
+$ helm upgrade --install parse-server ./infra/helm/parse-server/ --set image.tag=latest,replicaCount=1,image.repository=anuphnu/parse-server-example  --namespace parseapp
 ```
 #### With Jenkinsfile
 
