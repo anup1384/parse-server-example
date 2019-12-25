@@ -51,7 +51,7 @@ $ helm upgrade --install mongo ./infra/helm/mongo-db --namespace parseapp
 # Deploy parse-server app
 $ helm upgrade --install parse-server ./infra/helm/parse-server/ --set image.tag=latest,replicaCount=1,image.repository=anuphnu/parse-server-example  --namespace parseap
 ```
-#### Without Jenkinsfile
+#### With Jenkinsfile
 
 ```
 * Create new jenkins pipeline job and in pipeline section choose "Pipeline script from SCM" and provide bitbucket repo       details and pipeline scipt file name with path.
