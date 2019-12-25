@@ -1,6 +1,6 @@
 # parse-server-example
 
-Deploying parse-server on on kubernetes cluster step by step.
+Deploying parse-server nodejs app on on kubernetes cluster step by step.
 
 ### For Local setup on mac k8s
 
