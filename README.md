@@ -13,11 +13,12 @@ Deploying parse-server nodejs app on on kubernetes cluster step by step.
 * Docker registry hub, you can use any other registry like, ECR, GCR.
 
 
-I’m using local mac k8s to setup & deploy an parse-server, but you may use any other provider or infrastructure. To start with, first ensure that the Kubernetes Cluster is up and running.
+I’m using local mac k8s to setup & deploy parse-server app, but you may use any other provider or infrastructure.
+This repository has a Dockerfile,Jenkinsfile (pipeline script to build,deploy app on k8s using helm chart) and a helm chart for deploying parse-server on Kubernetes.
 
-This repository has a Dockerfile and a helm chart for deploying parse-server on Kubernetes.
+### Steps
 
-# Install and Enable helm in your cluster:
+# 1. Install and Enable helm in your cluster:
 
 ```
 # Download helm package and unpack it
@@ -33,8 +34,14 @@ $ kubectl create clusterrolebinding tiller \
 $ helm init --service-account tiller --upgrade
 ```
 
-### steps setup and deploy parse-server appliaction.
-* Write 
+### 2. Configure Dockerfile & Jenkinsfile
+
+* configure Dockerfile to build app.
+* configure Jenkinsfile pipeline and update parametes variables for build,deploy app on k8s using helm chart.
+* Add credential of docker hub registry (Go to Credentials > System > Global credentials and click on Add Credentials:) and     update your Jenkinsfile.
+* And create new jenkins pipeline job and in pipeline section choose "Pipeline script from SCM" and provide bitbucket repo       details and pipeline scipt file name with path.
+
+
 
 * Make sure you have at least Node 4.3. `node --version`
 * Clone this repo and change directory to it.
