@@ -35,9 +35,12 @@ stage('Clone Repo'){
   }
  
  stage ('Push to Registry') {
+          withEnv(['DOCKER_CONTENT_TRUST=1','DOCKER_CONTENT_TRUST_ROOT_PASSPHRASE=$DOCKER_CONTENT_TRUST_ROOT_PASSPHRASE','DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=$DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE']){
           docker.withRegistry('',registryCredential) {
             finalImage.push()
           }
+}
+
 }
 
   stage('Remove Pushed Image form Local') {
