@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
 properties([
 	parameters([
-        string(defaultValue: "test", description: 'Which Git Branch to clone?', name: 'GIT_BRANCH'),
+        string(defaultValue: "master", description: 'Which Git Branch to clone?', name: 'GIT_BRANCH'),
         string(defaultValue: "1", description: 'pod count', name: 'replicacount'),
         string(defaultValue: "anup1384", description: 'Environment name', name: 'GIT_ORG'),
         string(defaultValue: "parse-server-example", description: 'Which Git Repo to clone?', name: 'GIT_APP_REPO'),
