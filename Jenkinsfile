@@ -49,8 +49,8 @@ stage('helm list') {
 }
 
 stage('Deployment') {
-    sh "helm upgrade --install --atomic --wait --timeout 180 mongo ./infra/helm/mongo-db/ --namespace ${NAMESPACE}"
-    sh "helm upgrade --install --atomic --wait --timeout 180 parse-server ./infra/helm/parse-server/ --set image.tag=${IMAGETAG},replicaCount=${replicacount},image.repository=${registry}  --namespace {NAMESPACE}"
+    sh "helm upgrade --install --atomic --wait --timeout 300 mongo ./infra/helm/mongo-db/ --namespace ${NAMESPACE}"
+    sh "helm upgrade --install --atomic --wait --timeout 300 parse-server ./infra/helm/parse-server/ --set image.tag=${IMAGETAG},replicaCount=${replicacount},image.repository=${registry}  --namespace {NAMESPACE}"
 }
 
 stage('Image Rollout'){
