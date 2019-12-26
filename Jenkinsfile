@@ -2,6 +2,7 @@
 properties([
 	parameters([
         string(defaultValue: "master", description: 'Which Git Branch to clone?', name: 'GIT_BRANCH'),
+        string(defaultValue: "parseapp", description: 'Namespace for setup application', name: 'NAMESPACE'),
         string(defaultValue: "1", description: 'pod count', name: 'replicacount'),
         string(defaultValue: "anup1384", description: 'Environment name', name: 'GIT_ORG'),
         string(defaultValue: "parse-server-example", description: 'Which Git Repo to clone?', name: 'GIT_APP_REPO'),
@@ -50,12 +51,12 @@ stage('helm list') {
 }
 
 stage('Deployment') {
-    sh "helm upgrade --install --atomic --wait --timeout 120 mongo ./infra/helm/mongo-db/ --namespace parseapp"
-    sh "helm upgrade --install --atomic --wait --timeout 120 parse-server ./infra/helm/parse-server/ --set image.tag=${IMAGETAG},replicaCount=${replicacount},image.repository=${registry}  --namespace parseapp"
+    sh "helm upgrade --install --atomic --wait --timeout 180 mongo ./infra/helm/mongo-db/ --namespace ${NAMESPACE}"
+    sh "helm upgrade --install --atomic --wait --timeout 180 parse-server ./infra/helm/parse-server/ --set image.tag=${IMAGETAG},replicaCount=${replicacount},image.repository=${registry}  --namespace {NAMESPACE}"
 }
 
 stage('Image Rollout'){
-    sh ("kubectl rollout status deployment/parse-server -n parseapp")
+    sh ("kubectl rollout status deployment/parse-server -n ${NAMESPACE}")
 }
 
 }
