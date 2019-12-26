@@ -25,3 +25,33 @@ configmap: {
   SERVER_URL: "http://localhost:1337/parse",
   APP_ID: "app_id_starter"
 }
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 2
+  targetCPUUtilizationPercentage: 90
+  targetMemoryUtilizationPercentage: 90
+
+ingress:
+  enabled: false
+  annotations: {}
+  labels: {}
+  path: /
+  hosts:
+    - parse-server.abc.com
+  extraPaths: []
+  # - path: /*
+  #   backend:
+  #     serviceName: ssl-redirect
+  #     servicePort: use-annotation
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+
+#secrets: {
+#  DATABASE_USER_NAME: "bXlhcHA=",
+#  DATABASE_USER_PASSWORD: "bXlhcHBfcHdk"
+#}
