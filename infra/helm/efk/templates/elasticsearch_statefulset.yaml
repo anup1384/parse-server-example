@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.efk.es.name }}
+spec:
+  serviceName: elasticsearch
+  replicas: {{ .Values.efk.es.replicas }}
+  selector:
+    matchLabels:
+      app: elasticsearch
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+    spec:
+      initContainers:
+      - name: fix-permissions
+        image: "{{ .Values.efk.es.initImage.repository }}"
+        command: ['sh', '-c', 'chown -R 1000:1000 /usr/share/elasticsearch/data']
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: data
+          mountPath: /usr/share/elasticsearch/data
+      - name: increase-vm-max-map
+        image: "{{ .Values.efk.es.initImage.repository }}"
+        command: ["sysctl", "-w", "vm.max_map_count=262144"]
+        securityContext:
+          privileged: true
+      - name: increase-fd-ulimit
+        image: "{{ .Values.efk.es.initImage.repository }}"
+        command: ["sh", "-c", "ulimit -n 65536"]
+        securityContext:
+          privileged: true
+      containers:
+      - name: elasticsearch
+        image: "{{ .Values.efk.es.Image.repository }}:{{ .Values.efk.es.Image.tag }}"
+        resources:
+{{ toYaml .Values.efk.es.resources | indent 12 }}
+        ports:
+        - containerPort: 9200
+          name: rest
+          protocol: TCP
+        - containerPort: 9300
+          name: inter-node
+          protocol: TCP
+        volumeMounts:
+        - name: data
+          mountPath: /usr/share/elasticsearch/data
+        env:
+          - name: cluster.name
+            value: k8s-logs
+          - name: node.name
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: discovery.zen.ping.unicast.hosts
+            value: "{{ .Values.efk.es.zendiscovery }}"
+          - name: discovery.zen.minimum_master_nodes
+            value: "{{ .Values.efk.es.env.minimummasternodes }}"
+          - name: ES_JAVA_OPTS
+            value: "{{ .Values.efk.es.env.ESJAVAOPTS }}"
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+      labels:
+        app: elasticsearch
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: {{ .Values.efk.esdata.storageClassName }}
+      resources:
+        requests:
+          storage: {{ .Values.efk.esdata.storage }}

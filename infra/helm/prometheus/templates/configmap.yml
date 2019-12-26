@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.configmap.rules_name }}
+data:
+  {{  (.Files.Glob "rules/*.rules").AsConfig  | indent 2 }}
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.configmap.prometheus_name }}
+data:
+   prometheus.yml: {{ tpl (.Files.Get "prometheus.yml") . | quote }}

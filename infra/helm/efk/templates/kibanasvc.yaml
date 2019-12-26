@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.efk.kibana.name }}
+  labels:
+    app: kibana
+spec:
+  ports:
+  - port: {{ .Values.efk.kibana.Image.port }}
+  selector:
+    app: kibana
+  type: {{ .Values.efk.kibana.type }}

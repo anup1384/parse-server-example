@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "node-exporter.name" . }}
+  labels:
+    {{- include "nodeExporter.metaLabels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+    {{- include "nodeExporter.matchLabels" . | nindent 8 }}
+  updateStrategy:
+    type: OnDelete
+  template:
+    metadata:
+      labels:
+    {{- include "nodeExporter.matchLabels" . | nindent 8 }}
+    {{- if .Values.nodeExporter.podAnnotations }}
+      annotations:
+{{ toYaml .Values.nodeExporter.podAnnotations | indent 8 }}
+    {{- end }}
+    spec:
+{{- if .Values.nodeExporter.priorityClassName }}
+      priorityClassName: "{{ .Values.nodeExporter.priorityClassName }}"
+{{- end }}
+      containers:
+        - name:  {{ .Values.nodeExporter.name }}
+          image: "{{ .Values.nodeExporter.image.repository }}:{{ .Values.nodeExporter.image.tag }}"
+          imagePullPolicy: "{{ .Values.nodeExporter.image.pullPolicy }}"
+          args:
+            - --path.procfs=/host/proc
+            - --path.sysfs=/host/sys
+          ports:
+            - name: metrics
+              containerPort: 9100
+              hostPort: {{ .Values.nodeExporter.service.hostPort }}
+          volumeMounts:
+            - name: proc
+              mountPath: /host/proc
+              readOnly:  true
+            - name: sys
+              mountPath: /host/sys
+              readOnly: true
+          resources:
+{{ toYaml .Values.nodeExporter.resources | indent 12 }}
+      hostNetwork: true
+      hostPID: true
+      volumes:
+        - name: proc
+          hostPath:
+            path: /proc
+        - name: sys
+          hostPath:
+            path: /sys
+

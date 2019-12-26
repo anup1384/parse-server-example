@@ -1,0 +1,37 @@
+alertmanager:
+  image:
+    repository: prom/alertmanager
+    tag: v0.15.3
+    pullPolicy: IfNotPresent
+    port: 9093
+
+  slack_api_url: "https://slack.com/api/api.test"
+
+  service:
+    port: 9093
+    type: ClusterIP
+
+alertmanagerFiles:
+  alertmanager.yml:
+    global:
+      resolve_timeout: 5m
+      slack_api_url: "https://slack.com/api/api.test"
+    route:
+      group_wait: 10s
+      group_by: ['alertname', 'cluster', 'service']
+      group_interval: 5m
+      repeat_interval: 5m
+      receiver: default
+      routes:
+      - match:
+          team: devops
+        receiver: devops
+        continue: true
+    receivers:
+      - name: default
+      - name: 'devops'
+        slack_configs:
+        - channel: '#prometheus-alerts'
+          send_resolved: true
+    templates:
+    - '/etc/alertmanager-templates/*.tmpl'

@@ -1,0 +1,27 @@
+kubeStateMetrics:
+  replicaCount: 1
+
+  fullnameOverride: kube-state-metrics
+
+  podAnnotations:
+    prometheus.io/scrape: true
+
+  image:
+    repository: quay.io/mxinden/kube-state-metrics
+    tag: v1.4.0-gzip.3
+    pullPolicy: IfNotPresent
+
+  resizerimage:
+    repository: k8s.gcr.io/addon-resizer
+    tag: 1.8.3
+  resources:
+     limits:
+       cpu: 150m
+       memory: 50Mi
+     requests:
+       cpu: 150m
+       memory: 50Mi
+
+  spec:
+    type: ClusterIP
+    port: 8080

@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.efk.esdata.claimname }}
+spec:
+  storageClassName: {{ .Values.efk.esdata.storageClassName }}
+  accessModes:
+    - {{ .Values.efk.esdata.accessModes }}
+  resources:
+    requests:
+      storage: {{ .Values.efk.esdata.storage }}

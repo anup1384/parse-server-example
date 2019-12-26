@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.efk.kibana.name }}
+  labels:
+    app: kibana
+spec:
+  replicas: {{ .Values.efk.kibana.replicas }}
+  selector:
+    matchLabels:
+      app: kibana
+  template:
+    metadata:
+      labels:
+         app: kibana
+    spec:
+      containers:
+        - name: {{ .Values.efk.kibana.name }}
+          image: "{{ .Values.efk.kibana.Image.repository }}:{{ .Values.efk.kibana.Image.tag }}"
+          imagePullPolicy: {{ .Values.efk.kibana.Image.pullPolicy }}
+          resources:
+{{ toYaml .Values.efk.kibana.resources | indent 12 }}
+          env:
+            - name: ELASTICSEARCH_URL
+              value: {{ .Values.efk.kibana.esendoint }}
+          ports:
+          - containerPort: {{ .Values.efk.kibana.Image.port }}

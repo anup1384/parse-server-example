@@ -1,0 +1,10 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ .Values.efk.fluentd.name }}
+  labels:
+{{ include "efk.labels" . | indent 4 }}
+{{- if .Values.efk.fluentd.rules }}
+  rules:
+{{ toYaml .Values.rules | indent 4 }}
+{{- end }}

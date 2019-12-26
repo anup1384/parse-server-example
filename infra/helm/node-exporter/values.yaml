@@ -1,0 +1,32 @@
+nodeExporter:
+  name: prometheus-node-exporter
+  image:
+    repository: prom/node-exporter
+    tag: v0.18.0
+    pullPolicy: IfNotPresent
+
+  version: v0.15.2
+  clusterservice: '"true"'
+  addonmanagermode: Reconcile
+  podAnnotations: 
+    scheduler.alpha.kubernetes.io/critical-pod: ''
+
+
+  resources:
+     limits:
+       cpu: 200m
+       memory: 50Mi
+     requests:
+       cpu: 100m
+       memory: 30Mi
+
+  priorityClassName: system-node-critical
+
+  service:
+    clusterIP: None
+    externalIPs: []
+    loadBalancerIP: ""
+    loadBalancerSourceRanges: []
+    servicePort: 9100
+    type: ClusterIP
+    hostPort: 9100

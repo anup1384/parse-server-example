@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "kube-state-metrics.fullname" . }}
+spec:
+  selector:
+    matchLabels:
+    {{ include "kube-state-metrics.matchLabels" . | nindent 8 }}
+  replicas: {{ .Values.kubeStateMetrics.replicaCount }}
+  template:
+    metadata:
+      labels:
+   {{ include "kube-state-metrics.matchLabels" . | nindent 12 }}
+    spec:
+      serviceAccountName: {{ include "kube-state-metrics.fullname" . }}
+      containers:
+      - name: {{ include "kube-state-metrics.fullname" . }}
+        image: "{{ .Values.kubeStateMetrics.image.repository }}:{{ .Values.kubeStateMetrics.image.tag }}"
+        imagePullPolicy: "{{ .Values.kubeStateMetrics.image.pullPolicy }}"
+        ports:
+        - name: http-metrics
+          containerPort: 8080
+        - name: telemetry
+          containerPort: 8081
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+      - name: addon-resizer
+        image: "{{ .Values.kubeStateMetrics.resizerimage.repository }}:{{ .Values.kubeStateMetrics.resizerimage.tag }}"
+        resources:
+{{ toYaml .Values.kubeStateMetrics.resources | indent 12 }}
+        env:
+          - name: MY_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: MY_POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+        command:
+          - /pod_nanny
+          - --container={{ include "kube-state-metrics.fullname" . }}
+          - --cpu=100m
+          - --extra-cpu=1m
+          - --memory=100Mi
+          - --extra-memory=2Mi
+          - --threshold=5
+          - --deployment={{ include "kube-state-metrics.fullname" . }}
+

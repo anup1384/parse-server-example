@@ -1,0 +1,57 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ include "prometheus.fullname" . }}
+  labels:
+{{ include "prometheus.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "prometheus.name" . }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "prometheus.name" . }}
+    spec:
+      serviceAccountName: monitoring
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - "--config.file={{ .Values.server.configPath }}"
+            #- "--storage.tsdb.path={{ .Values.volumemount.mountPath }}/db"
+            - "--storage.tsdb.path=/prometheus"
+            - "--web.enable-lifecycle"
+            - "--storage.tsdb.no-lockfile"
+          ports:
+            - name: http
+              containerPort:  {{ .Values.image.port }}
+              protocol: TCP
+{{- if .Values.volumemount }}
+          volumeMounts:
+            - name: {{ .Values.volumemount.configname}}
+              mountPath: {{ .Values.volumemount.configPath}}
+            - name: {{ .Values.volumemount.name}}
+              mountPath: {{ .Values.volumemount.mountPath }}
+            - name: {{ .Values.volumemount.rulesname}}
+              mountPath: {{ .Values.volumemount.prometheusrulesPath}}
+{{- end }}
+    {{- if .Values.server.securityContext }}
+      securityContext:
+{{ toYaml .Values.server.securityContext | indent 8 }}
+    {{- end }}
+{{- if .Values.volumeclaim }}
+      volumes:
+        - name: {{ .Values.volumemount.configname}}
+          configMap:
+            defaultMode: 420
+            name: {{ .Values.configmap.prometheus_name }}
+        - name: {{ .Values.volumemount.name}}
+          persistentVolumeClaim:
+            claimName: {{ include "prometheus.fullname" . }}
+        - name: {{ .Values.volumemount.rulesname}}
+          configMap:
+            name: {{ .Values.configmap.rules_name }}
+{{- end }}

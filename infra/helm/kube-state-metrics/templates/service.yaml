@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "kube-state-metrics.fullname" . }}
+  labels:
+    {{ include "kube-state-metrics.matchLabels" . | nindent 8 }}
+{{- if .Values.kubeStateMetrics.deploymentAnnotations }}
+  annotations:
+{{ toYaml .Values.kubeStateMetrics.deploymentAnnotations | indent 4 }}
+{{- end }}
+spec:
+  type: {{ .Values.kubeStateMetrics.spec.type }}
+  ports:
+    - port: {{ .Values.kubeStateMetrics.spec.port }}
+      targetPort: http
+      protocol: TCP
+      name: http-metrics
+    - name: telemetry
+      port: 8081
+      targetPort: telemetry
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: {{ include "kube-state-metrics.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}

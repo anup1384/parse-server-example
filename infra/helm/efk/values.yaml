@@ -1,0 +1,73 @@
+efk:
+  fluentd:
+    name: fluentd
+
+    image:
+      repository: fluent/fluentd-kubernetes-daemonset
+      tag: v0.12-debian-elasticsearch
+      pullPolicy: IfNotPresent
+
+    rules:
+    -  apiGroups:
+       - ""
+       resources:
+       - pods
+       - namespaces
+       verbs:
+       - get
+       - list
+       - watch
+
+  esdata:
+    name: es-pv
+    claimname: es-pvc
+    storageClassName: local
+    storage: 10Gi
+    accessModes: "ReadWriteOnce"
+    hostpath: "/data"
+
+  es:
+    name: es-cluster
+    replicas: 1
+    initImage:
+      repository: busybox
+      tag: latest
+      pullPolicy: IfNotPresent
+    Image:
+      repository: docker.elastic.co/elasticsearch/elasticsearch-oss
+      tag: 6.4.3
+      pullPolicy: IfNotPresent
+
+    env:
+      zendiscovery: "es-cluster-0.elasticsearch"
+      minimummasternodes: "1"
+      ESJAVAOPTS: "-Xms512m -Xmx512m"
+    resources:
+      limits:
+        cpu: "1000m"
+      requests:
+        cpu: "100m"
+
+
+
+  provisioner:
+    provisioner: kubernetes.io/no-provisioner
+    volumeBindingMode: WaitForFirstConsumer
+
+
+  kibana:
+    name: kibana
+    replicas: 1
+    Image:
+      repository: docker.elastic.co/kibana/kibana-oss
+      tag: 6.4.3
+      pullPolicy: IfNotPresent
+      port: 5601
+    type: LoadBalancer
+
+    resources:
+      limits:
+        cpu: "1000m"
+      requests:
+        cpu: "100m"
+    esendoint: "http://elasticsearch:9200"

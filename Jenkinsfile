@@ -6,8 +6,7 @@ properties([
         string(defaultValue: "anup1384", description: 'Environment name', name: 'GIT_ORG'),
         string(defaultValue: "parse-server-example", description: 'Which Git Repo to clone?', name: 'GIT_APP_REPO'),
         string(defaultValue: "anuphnu", description: 'Docker registry account name?', name: 'REGISTRY'),
-//        string(defaultValue: "digitalcst/nonprod/cst-consumer-bot", description: 'AWS ECR Repository where built docker images will be pushed.', name: 'ECR_REPO_NAME'),
-        choice(name: 'action', choices: "build\nrollback", description: 'choose for build and rollback')
+        choice(name: 'action', choices: "build", description: 'choose for build and rollback')
 	])
 ])
 
@@ -35,10 +34,12 @@ stage('Clone Repo'){
   }
  
  stage ('Push to Registry') {
+          withEnv(['DOCKER_CONTENT_TRUST=1','DOCKER_CONTENT_TRUST_ROOT_PASSPHRASE=$DOCKER_CONTENT_TRUST_ROOT_PASSPHRASE','DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=$DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE']){
           docker.withRegistry('',registryCredential) {
             finalImage.push()
           }
       }
+}
 
   stage('Remove Pushed Image form Local') {
     sh "docker rmi -f ${registry}:${IMAGETAG} "
@@ -49,12 +50,12 @@ stage('helm list') {
 }
 
 stage('Deployment') {
-    sh "helm upgrade --install --atomic --wait --timeout 120 mongo ./infra/helm/mongo-db/ --namespace atlantest"
-    sh "helm upgrade --install --atomic --wait --timeout 120 parse-server ./infra/helm/parse-server/ --set image.tag=${IMAGETAG},replicaCount=${replicacount},image.repository=${registry}  --namespace atlantest"
+    sh "helm upgrade --install --atomic --wait --timeout 120 mongo ./infra/helm/mongo-db/ --namespace parseapp"
+    sh "helm upgrade --install --atomic --wait --timeout 120 parse-server ./infra/helm/parse-server/ --set image.tag=${IMAGETAG},replicaCount=${replicacount},image.repository=${registry}  --namespace parseapp"
 }
 
 stage('Image Rollout'){
-    sh ("kubectl rollout status deployment/parse-server -n atlantest")
+    sh ("kubectl rollout status deployment/parse-server -n parseapp")
 }
 
 }
