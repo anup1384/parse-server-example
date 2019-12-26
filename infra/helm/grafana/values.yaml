@@ -128,7 +128,7 @@ ingress:
   labels: {}
   path: /
   hosts:
-    - cstgrafana.paytmdgt.io
+    - grafana.anup.io
   ## Extra paths to prepend to every host configuration. This is useful when working with annotation based services.
   extraPaths: []
   # - path: /*
@@ -226,7 +226,7 @@ initChownData:
 
 # Administrator credentials when not using an existing secret (see below)
 adminUser: admin
-adminPassword: Paytm@#$!5791
+adminPassword: anup@#$!5791
 
 # Use an existing secret for the admin user.
 admin:
